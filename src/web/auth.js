@@ -107,18 +107,21 @@ function setupAuth(app) {
     res.render('login', { title: 'Sign In' });
   });
 
-  app.get(
-    '/auth/google',
-    passport.authenticate('google', { scope: ['profile', 'email'] }),
-  );
+  app.get('/auth/google', (req, res, next) => {
+    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+      return res.redirect('/login?error=oauth_not_configured');
+    }
+    passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next);
+  });
 
-  app.get(
-    '/auth/google/callback',
-    passport.authenticate('google', { failureRedirect: '/login?error=denied' }),
-    (req, res) => {
+  app.get('/auth/google/callback', (req, res, next) => {
+    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+      return res.redirect('/login?error=oauth_not_configured');
+    }
+    passport.authenticate('google', { failureRedirect: '/login?error=denied' })(req, res, () => {
       res.redirect('/');
-    },
-  );
+    });
+  });
 
   app.get('/logout', (req, res) => {
     if (req.logout) {
