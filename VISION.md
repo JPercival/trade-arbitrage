@@ -56,7 +56,7 @@ Read-only monitoring and simulation. No wallets, no capital, no real trades.
 │  Polls every 10-30 seconds per chain          │
 │  Chains: Ethereum, Arbitrum, Base             │
 │  Pairs: ETH/USDC, WBTC/USDC, configurable    │
-│  Source: 1inch API quotes + ethers.js RPCs    │
+│  Source: DeFi Llama + ParaSwap + ethers.js     │
 └──────────────────┬──────────────────────────┘
                    │
                    ▼
@@ -101,8 +101,9 @@ Read-only monitoring and simulation. No wallets, no capital, no real trades.
 | Component | Choice | Rationale |
 |---|---|---|
 | Runtime | Node.js | Consistent with other projects |
-| Price Data | 1inch Swap API (free) | Realistic quotes including routing, gas, slippage |
-| Chain Access | ethers.js + free RPCs | Alchemy free tier (300M CU/mo) |
+| Price Screening | DeFi Llama API (free) | Aggregated cross-chain prices, no auth, fast polling |
+| Execution Quotes | ParaSwap API (free) | Realistic swap quotes with routing, gas, slippage — no auth |
+| Chain Access | ethers.js + free RPCs | LlamaRPC, Arbitrum public, Base public |
 | Database | SQLite (better-sqlite3) | Simple, portable, proven |
 | Web UI | Express + EJS | Fast to build, same pattern as deal tracker |
 | Charts | Chart.js | Lightweight, no build step |
@@ -279,7 +280,7 @@ PORT=3000
 | Risk | Mitigation |
 |---|---|
 | Free API rate limits | Multiple RPC providers, fallback logic, efficient polling |
-| 1inch API changes/deprecation | Abstract price source behind interface, easy to swap |
+| ParaSwap/DeFi Llama API changes | Abstract price source behind interface, easy to swap |
 | Price data staleness | Timestamp checks, discard quotes older than threshold |
 | Railway free tier limits | Lightweight design, SQLite not Postgres, minimal memory |
 | False positives (arbs that aren't real) | Validate with multiple quote sources, realistic slippage modeling |
