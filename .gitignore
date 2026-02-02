@@ -2,6 +2,14 @@ node_modules/
 .env
 *.db
 *.sqlite
-.DS_Store
 data/
 coverage/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+Icon?
