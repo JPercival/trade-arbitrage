@@ -88,7 +88,7 @@ function addressToPair(chain, address, pairs = config.pairs) {
  * @returns {{ prices: Array<{chain: string, pair: string, price: number, timestamp: number}>, stale: Array<{key: string, age: number}> }}
  */
 export function parsePrices(data, options = {}) {
-  const maxAgeSeconds = options.maxAgeSeconds ?? 60;
+  const maxAgeSeconds = options.maxAgeSeconds ?? 300;
   const nowSeconds = options.now ?? Math.floor(Date.now() / 1000);
   const pairs = options.pairs ?? config.pairs;
 
@@ -158,7 +158,7 @@ function reverseChainName(llamaChain) {
  * @param {object} options
  * @param {string[]} options.chains - Chains to query (default from config)
  * @param {Array} options.pairs - Trading pairs (default from config)
- * @param {number} options.maxAgeSeconds - Stale price threshold in seconds (default 60)
+ * @param {number} options.maxAgeSeconds - Stale price threshold in seconds (default 300 — DeFi Llama timestamps can lag 2-5 min)
  * @param {number} options.timeoutMs - Fetch timeout in ms (default 10000)
  * @param {typeof globalThis.fetch} options.fetchFn - Fetch implementation (for testing)
  * @returns {Promise<{ prices: Array<{chain: string, pair: string, price: number, timestamp: number}>, stale: Array }>}
@@ -166,7 +166,7 @@ function reverseChainName(llamaChain) {
 export async function fetchPrices(options = {}) {
   const chains = options.chains ?? config.chains;
   const pairs = options.pairs ?? config.pairs;
-  const maxAgeSeconds = options.maxAgeSeconds ?? 60;
+  const maxAgeSeconds = options.maxAgeSeconds ?? 300;
   const timeoutMs = options.timeoutMs ?? FETCH_TIMEOUT_MS;
   const fetchFn = options.fetchFn ?? globalThis.fetch;
 

@@ -227,7 +227,7 @@ describe('runCycle', () => {
   });
 
   it('logs stale prices', async () => {
-    const staleTs = NOW_SECONDS - 120; // 2 minutes old
+    const staleTs = NOW_SECONDS - 600; // 10 minutes old (exceeds 300s threshold)
     const response = makeLlamaResponse();
     response.coins['ethereum:0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'].timestamp = staleTs;
 

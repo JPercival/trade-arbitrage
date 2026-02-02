@@ -346,16 +346,17 @@ describe('auth', () => {
       };
       setupAuth(app);
 
-      // The callback route has 2 handlers: passport.authenticate and the redirect
+      // The callback route has 1 handler (wraps passport.authenticate + redirect)
       const callbackHandlers = getCalls['/auth/google/callback'];
-      expect(callbackHandlers.length).toBe(2);
+      expect(callbackHandlers.length).toBe(1);
 
-      // Test the success handler (second handler)
-      const successHandler = callbackHandlers[1];
+      // When credentials are missing, it redirects to login with error
       const redirectFn = vi.fn();
       const res = { redirect: redirectFn };
-      successHandler({}, res);
-      expect(redirectFn).toHaveBeenCalledWith('/');
+      delete process.env.GOOGLE_CLIENT_ID;
+      delete process.env.GOOGLE_CLIENT_SECRET;
+      callbackHandlers[0]({}, res, vi.fn());
+      expect(redirectFn).toHaveBeenCalledWith('/login?error=oauth_not_configured');
     });
   });
 
