@@ -8,7 +8,7 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'text-summary', 'lcov'],
       include: ['src/**/*.js'],
-      exclude: ['src/index.js', 'src/web/**'],
+      exclude: ['src/index.js'],
       thresholds: {
         lines: 100,
         functions: 100,

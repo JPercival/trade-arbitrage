@@ -1,0 +1,184 @@
+<%- include('header', { title, user }) %>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+
+<!-- Cumulative P&L -->
+<div class="card">
+  <h2>Cumulative P&L</h2>
+  <div class="chart-container">
+    <canvas id="pnlChart"></canvas>
+  </div>
+</div>
+
+<div class="grid-2">
+  <!-- Arbs per Day -->
+  <div class="card">
+    <h2>Arbs / Day</h2>
+    <div class="chart-container">
+      <canvas id="arbsChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Spread Distribution -->
+  <div class="card">
+    <h2>Spread % Distribution</h2>
+    <div class="chart-container">
+      <canvas id="spreadChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Chain-Pair Heatmap -->
+<div class="card">
+  <h2>Route Profitability Heatmap</h2>
+  <div id="heatmap" style="overflow-x:auto"></div>
+</div>
+
+<script>
+const chartColors = {
+  green: '#3fb950',
+  red: '#f85149',
+  blue: '#58a6ff',
+  purple: '#bc8cff',
+  yellow: '#d29922',
+  muted: '#8b949e',
+  border: '#30363d',
+};
+
+Chart.defaults.color = '#8b949e';
+Chart.defaults.borderColor = '#30363d';
+
+async function loadAnalytics() {
+  try {
+    const [dailyRes, tradesRes] = await Promise.all([
+      fetch('/api/stats/daily?days=60'),
+      fetch('/api/trades?limit=100'),
+    ]);
+    if (!dailyRes.ok || !tradesRes.ok) return;
+
+    const daily = (await dailyRes.json()).reverse();
+    const tradesData = await tradesRes.json();
+    const trades = tradesData.trades || [];
+
+    // Cumulative P&L chart
+    let cumulative = 0;
+    const pnlData = daily.map(d => {
+      cumulative += d.total_sim_profit;
+      return { x: d.date, y: cumulative };
+    });
+
+    new Chart(document.getElementById('pnlChart'), {
+      type: 'line',
+      data: {
+        datasets: [{
+          label: 'Cumulative P&L ($)',
+          data: pnlData,
+          borderColor: cumulative >= 0 ? chartColors.green : chartColors.red,
+          backgroundColor: (cumulative >= 0 ? chartColors.green : chartColors.red) + '20',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 2,
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: { type: 'category' },
+          y: { beginAtZero: true },
+        },
+      },
+    });
+
+    // Arbs per day
+    new Chart(document.getElementById('arbsChart'), {
+      type: 'bar',
+      data: {
+        labels: daily.map(d => d.date),
+        datasets: [{
+          label: 'Simulated Trades',
+          data: daily.map(d => d.sim_trades),
+          backgroundColor: chartColors.blue + '80',
+          borderColor: chartColors.blue,
+          borderWidth: 1,
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: { beginAtZero: true },
+        },
+      },
+    });
+
+    // Spread distribution
+    const buckets = { '0-0.05': 0, '0.05-0.1': 0, '0.1-0.2': 0, '0.2-0.5': 0, '0.5+': 0 };
+    trades.forEach(t => {
+      const pct = Math.abs(t.profit_pct);
+      if (pct < 0.05) buckets['0-0.05']++;
+      else if (pct < 0.1) buckets['0.05-0.1']++;
+      else if (pct < 0.2) buckets['0.1-0.2']++;
+      else if (pct < 0.5) buckets['0.2-0.5']++;
+      else buckets['0.5+']++;
+    });
+
+    new Chart(document.getElementById('spreadChart'), {
+      type: 'doughnut',
+      data: {
+        labels: Object.keys(buckets).map(k => k + '%'),
+        datasets: [{
+          data: Object.values(buckets),
+          backgroundColor: [
+            chartColors.muted,
+            chartColors.blue,
+            chartColors.green,
+            chartColors.yellow,
+            chartColors.purple,
+          ],
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+      },
+    });
+
+    // Heatmap — route profitability table
+    const routeMap = {};
+    trades.forEach(t => {
+      const route = t.buy_chain + ' → ' + t.sell_chain;
+      const key = t.pair + '|' + route;
+      if (!routeMap[key]) routeMap[key] = { pair: t.pair, route, profit: 0, count: 0 };
+      routeMap[key].profit += t.net_profit_usd;
+      routeMap[key].count++;
+    });
+
+    const routes = Object.values(routeMap).sort((a, b) => b.profit - a.profit);
+    if (routes.length > 0) {
+      let html = '<table><thead><tr><th>Pair</th><th>Route</th><th>Trades</th><th>Total Profit</th><th>Avg Profit</th></tr></thead><tbody>';
+      routes.forEach(r => {
+        const avg = r.profit / r.count;
+        const cls = r.profit >= 0 ? 'positive' : 'negative';
+        html += '<tr>';
+        html += '<td>' + r.pair + '</td>';
+        html += '<td>' + r.route + '</td>';
+        html += '<td>' + r.count + '</td>';
+        html += '<td class="' + cls + '">$' + r.profit.toFixed(2) + '</td>';
+        html += '<td class="' + cls + '">$' + avg.toFixed(2) + '</td>';
+        html += '</tr>';
+      });
+      html += '</tbody></table>';
+      document.getElementById('heatmap').innerHTML = html;
+    } else {
+      document.getElementById('heatmap').innerHTML = '<div class="empty">No trade data for heatmap</div>';
+    }
+  } catch (e) {
+    console.error('Failed to load analytics:', e);
+  }
+}
+
+loadAnalytics();
+</script>
+
+<%- include('footer') %>

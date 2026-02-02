@@ -9,7 +9,12 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage"
   },
-  "keywords": ["arbitrage", "defi", "cross-chain", "paper-trading"],
+  "keywords": [
+    "arbitrage",
+    "defi",
+    "cross-chain",
+    "paper-trading"
+  ],
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
@@ -18,10 +23,13 @@
     "dotenv": "^16.0.0",
     "ejs": "^3.1.0",
     "ethers": "^6.0.0",
-    "express": "^5.0.0"
+    "express": "^5.0.0",
+    "express-session": "^1.19.0",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0"
   },
   "devDependencies": {
-    "vitest": "^3.0.0",
-    "@vitest/coverage-v8": "^3.0.0"
+    "@vitest/coverage-v8": "^3.0.0",
+    "vitest": "^3.0.0"
   }
 }

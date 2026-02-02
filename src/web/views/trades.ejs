@@ -1,0 +1,86 @@
+<%- include('header', { title, user }) %>
+
+<!-- Filters -->
+<div class="card">
+  <h2>Filter Trades</h2>
+  <form class="filter-bar" method="GET" action="/trades">
+    <select name="pair">
+      <option value="">All Pairs</option>
+      <% pairs.forEach(p => { %>
+        <option value="<%= p %>" <%= filters.pair === p ? 'selected' : '' %>><%= p %></option>
+      <% }) %>
+    </select>
+    <select name="chain">
+      <option value="">All Chains</option>
+      <% chains.forEach(c => { %>
+        <option value="<%= c %>" <%= filters.chain === c ? 'selected' : '' %>><%= c %></option>
+      <% }) %>
+    </select>
+    <input type="date" name="from" value="<%= filters.from || '' %>" placeholder="From">
+    <input type="date" name="to" value="<%= filters.to || '' %>" placeholder="To">
+    <button type="submit" class="btn">Filter</button>
+    <a href="/trades" class="btn btn-outline">Reset</a>
+  </form>
+</div>
+
+<!-- Trades Table -->
+<div class="card">
+  <h2>Simulated Trade Log (<%= total %> total)</h2>
+  <% if (trades.length === 0) { %>
+    <div class="empty">No trades match your filters</div>
+  <% } else { %>
+    <div style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Pair</th>
+            <th>Route</th>
+            <th>Size</th>
+            <th>Tokens</th>
+            <th>Received</th>
+            <th>Gas (Buy)</th>
+            <th>Gas (Sell)</th>
+            <th>Profit</th>
+            <th>%</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% trades.forEach(t => { %>
+            <tr>
+              <td>#<%= t.id %></td>
+              <td><%= t.pair %></td>
+              <td><%= t.buy_chain %> → <%= t.sell_chain %></td>
+              <td>$<%= t.trade_size_usd.toFixed(0) %></td>
+              <td><%= t.tokens_bought.toFixed(6) %></td>
+              <td>$<%= t.usd_received.toFixed(2) %></td>
+              <td>$<%= t.gas_cost_buy.toFixed(2) %></td>
+              <td>$<%= t.gas_cost_sell.toFixed(2) %></td>
+              <td class="<%= t.net_profit_usd >= 0 ? 'positive' : 'negative' %>">
+                $<%= t.net_profit_usd.toFixed(2) %>
+              </td>
+              <td class="<%= t.profit_pct >= 0 ? 'positive' : 'negative' %>">
+                <%= t.profit_pct.toFixed(4) %>%
+              </td>
+              <td><%= new Date(t.timestamp).toLocaleString() %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <% if (page > 1) { %>
+        <a href="/trades?page=<%= page - 1 %>&limit=<%= limit %><%= filters.pair ? '&pair=' + filters.pair : '' %><%= filters.chain ? '&chain=' + filters.chain : '' %><%= filters.from ? '&from=' + filters.from : '' %><%= filters.to ? '&to=' + filters.to : '' %>">← Prev</a>
+      <% } %>
+      <span>Page <%= page %> of <%= totalPages %></span>
+      <% if (page < totalPages) { %>
+        <a href="/trades?page=<%= page + 1 %>&limit=<%= limit %><%= filters.pair ? '&pair=' + filters.pair : '' %><%= filters.chain ? '&chain=' + filters.chain : '' %><%= filters.from ? '&from=' + filters.from : '' %><%= filters.to ? '&to=' + filters.to : '' %>">Next →</a>
+      <% } %>
+    </div>
+  <% } %>
+</div>
+
+<%- include('footer') %>

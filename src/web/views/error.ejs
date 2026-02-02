@@ -1,0 +1,9 @@
+<%- include('header', { title: 'Error', user: user || null }) %>
+
+<div class="card" style="text-align:center; padding: 3rem;">
+  <h2 style="font-size: 3rem; margin-bottom: 1rem; color: var(--red);"><%= status %></h2>
+  <p style="font-size: 1.1rem; margin-bottom: 1.5rem;"><%= message %></p>
+  <a href="/" class="btn">Back to Dashboard</a>
+</div>
+
+<%- include('footer') %>

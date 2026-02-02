@@ -1,0 +1,195 @@
+<%- include('header', { title, user }) %>
+
+<!-- Summary Stats -->
+<div class="grid-4" id="summary-stats">
+  <div class="card">
+    <div class="stat-label">Total Arbs</div>
+    <div class="stat-value" id="stat-total"><%= summary.totalTrades %></div>
+  </div>
+  <div class="card">
+    <div class="stat-label">Total P&L</div>
+    <div class="stat-value <%= summary.totalProfit >= 0 ? 'positive' : 'negative' %>" id="stat-profit">
+      $<%= summary.totalProfit.toFixed(2) %>
+    </div>
+  </div>
+  <div class="card">
+    <div class="stat-label">Avg Spread</div>
+    <div class="stat-value" id="stat-spread"><%= summary.avgSpread.toFixed(4) %>%</div>
+  </div>
+  <div class="card">
+    <div class="stat-label">Best Pair</div>
+    <div class="stat-value" id="stat-pair" style="font-size:1.2rem"><%= summary.bestPair %></div>
+  </div>
+</div>
+
+<!-- Current Prices -->
+<div class="card">
+  <h2>Current Prices</h2>
+  <% if (prices.length === 0) { %>
+    <div class="empty">No price data yet — waiting for first poll</div>
+  <% } else { %>
+    <div style="overflow-x:auto">
+      <table id="prices-table">
+        <thead>
+          <tr>
+            <th>Pair</th>
+            <th>Chain</th>
+            <th>Price</th>
+            <th>Gas (gwei)</th>
+            <th>Updated</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% prices.forEach(p => { %>
+            <tr>
+              <td><%= p.pair %></td>
+              <td><%= p.chain %></td>
+              <td>$<%= p.price.toFixed(2) %></td>
+              <td><%= p.gas_price_gwei ? p.gas_price_gwei.toFixed(1) : '—' %></td>
+              <td><%= new Date(p.timestamp).toLocaleString() %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</div>
+
+<!-- Open Spreads -->
+<div class="card">
+  <h2>Open Spreads</h2>
+  <% if (openSpreads.length === 0) { %>
+    <div class="empty">No open spreads detected</div>
+  <% } else { %>
+    <div style="overflow-x:auto">
+      <table id="spreads-table">
+        <thead>
+          <tr>
+            <th>Pair</th>
+            <th>Buy</th>
+            <th>Sell</th>
+            <th>Gross %</th>
+            <th>Net %</th>
+            <th>Detected</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% openSpreads.forEach(s => { %>
+            <tr>
+              <td><%= s.pair %></td>
+              <td><%= s.buy_chain %> @ $<%= s.buy_price.toFixed(2) %></td>
+              <td><%= s.sell_chain %> @ $<%= s.sell_price.toFixed(2) %></td>
+              <td class="positive"><%= s.gross_spread_pct.toFixed(4) %>%</td>
+              <td><%= s.net_spread_pct ? s.net_spread_pct.toFixed(4) + '%' : '—' %></td>
+              <td><%= new Date(s.detected_at).toLocaleString() %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</div>
+
+<!-- Recent Sim Trades -->
+<div class="card">
+  <h2>Recent Simulated Trades</h2>
+  <% if (recentTrades.length === 0) { %>
+    <div class="empty">No simulated trades yet</div>
+  <% } else { %>
+    <div style="overflow-x:auto">
+      <table id="trades-table">
+        <thead>
+          <tr>
+            <th>Pair</th>
+            <th>Route</th>
+            <th>Size</th>
+            <th>Profit</th>
+            <th>%</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% recentTrades.forEach(t => { %>
+            <tr>
+              <td><%= t.pair %></td>
+              <td><%= t.buy_chain %> → <%= t.sell_chain %></td>
+              <td>$<%= t.trade_size_usd.toFixed(0) %></td>
+              <td class="<%= t.net_profit_usd >= 0 ? 'positive' : 'negative' %>">
+                $<%= t.net_profit_usd.toFixed(2) %>
+              </td>
+              <td class="<%= t.profit_pct >= 0 ? 'positive' : 'negative' %>">
+                <%= t.profit_pct.toFixed(4) %>%
+              </td>
+              <td><%= new Date(t.timestamp).toLocaleString() %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</div>
+
+<script>
+// Auto-refresh live data every 15 seconds
+async function refreshDashboard() {
+  try {
+    const [pricesRes, spreadsRes, statsRes] = await Promise.all([
+      fetch('/api/prices/current'),
+      fetch('/api/spreads?status=open'),
+      fetch('/api/stats/summary'),
+    ]);
+    if (!pricesRes.ok || !spreadsRes.ok || !statsRes.ok) return;
+
+    const prices = await pricesRes.json();
+    const spreads = await spreadsRes.json();
+    const stats = await statsRes.json();
+
+    // Update summary stats
+    document.getElementById('stat-total').textContent = stats.totalTrades;
+    const profitEl = document.getElementById('stat-profit');
+    profitEl.textContent = '$' + stats.totalProfit.toFixed(2);
+    profitEl.className = 'stat-value ' + (stats.totalProfit >= 0 ? 'positive' : 'negative');
+    document.getElementById('stat-spread').textContent = stats.avgSpreadPct.toFixed(4) + '%';
+    document.getElementById('stat-pair').textContent = stats.bestPair || 'N/A';
+
+    // Update prices table
+    const pricesBody = document.querySelector('#prices-table tbody');
+    if (pricesBody && prices.length > 0) {
+      pricesBody.innerHTML = prices.map(p => `
+        <tr>
+          <td>${p.pair}</td>
+          <td>${p.chain}</td>
+          <td>$${p.price.toFixed(2)}</td>
+          <td>${p.gas_price_gwei ? p.gas_price_gwei.toFixed(1) : '—'}</td>
+          <td>${new Date(p.timestamp).toLocaleString()}</td>
+        </tr>
+      `).join('');
+    }
+
+    // Update spreads table
+    const spreadsBody = document.querySelector('#spreads-table tbody');
+    if (spreadsBody) {
+      if (spreads.length === 0) {
+        spreadsBody.innerHTML = '<tr><td colspan="6" class="empty">No open spreads</td></tr>';
+      } else {
+        spreadsBody.innerHTML = spreads.map(s => `
+          <tr>
+            <td>${s.pair}</td>
+            <td>${s.buy_chain} @ $${s.buy_price.toFixed(2)}</td>
+            <td>${s.sell_chain} @ $${s.sell_price.toFixed(2)}</td>
+            <td class="positive">${s.gross_spread_pct.toFixed(4)}%</td>
+            <td>${s.net_spread_pct ? s.net_spread_pct.toFixed(4) + '%' : '—'}</td>
+            <td>${new Date(s.detected_at).toLocaleString()}</td>
+          </tr>
+        `).join('');
+      }
+    }
+  } catch (e) {
+    // Silently fail — next refresh will retry
+  }
+}
+
+setInterval(refreshDashboard, 15000);
+</script>
+
+<%- include('footer') %>

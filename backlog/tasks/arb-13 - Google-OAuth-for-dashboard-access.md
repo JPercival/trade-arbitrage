@@ -1,9 +1,11 @@
 ---
 id: ARB-13
 title: Google OAuth for dashboard access
-status: To Do
-assignee: []
+status: Done
+assignee:
+  - '@ros'
 created_date: '2026-02-02 18:57'
+updated_date: '2026-02-02 20:12'
 labels:
   - web
   - auth
@@ -26,10 +28,10 @@ Protect all routes except /api/health (needed for Railway health checks).
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Google OAuth login flow works (sign in with Google button)
-- [ ] #2 Only allowed email(s) can access the dashboard (configurable allowlist)
-- [ ] #3 All routes except /api/health require authentication
-- [ ] #4 AUTH_BYPASS=true env flag disables auth for local development
-- [ ] #5 Session persists across page loads (cookie-based)
-- [ ] #6 100% test coverage for all new code (unit tests with vitest or similar)
+- [x] #1 Google OAuth login flow works (sign in with Google button)
+- [x] #2 Only allowed email(s) can access the dashboard (configurable allowlist)
+- [x] #3 All routes except /api/health require authentication
+- [x] #4 AUTH_BYPASS=true env flag disables auth for local development
+- [x] #5 Session persists across page loads (cookie-based)
+- [x] #6 100% test coverage for all new code (unit tests with vitest or similar)
 <!-- AC:END -->
