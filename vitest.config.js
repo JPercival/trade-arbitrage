@@ -8,7 +8,7 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'text-summary', 'lcov'],
       include: ['src/**/*.js'],
-      exclude: ['src/index.js', 'src/prices/**', 'src/engine/**', 'src/web/**'],
+      exclude: ['src/index.js', 'src/engine/**', 'src/web/**'],
       thresholds: {
         lines: 100,
         functions: 100,
