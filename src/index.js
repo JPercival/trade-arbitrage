@@ -12,6 +12,7 @@ import { fileURLToPath } from 'url';
 import config from './config.js';
 import AppDatabase from './db.js';
 import { createMonitor } from './engine/monitor.js';
+import { startServer } from './web/server.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -38,6 +39,9 @@ function main() {
     console.log(`Pruned ${pruned.changes} old price records`);
   }
 
+  // Start web server
+  const server = startServer(db, config.port);
+
   // Create and start monitor
   const monitor = createMonitor({ db });
   monitor.start();
@@ -46,6 +50,7 @@ function main() {
   function shutdown(signal) {
     console.log(`\nReceived ${signal}, shutting down...`);
     monitor.stop();
+    server.close();
     db.close();
     console.log('Goodbye!');
     process.exit(0);
