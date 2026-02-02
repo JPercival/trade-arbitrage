@@ -1,0 +1,41 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "npm start"
+healthcheckPath = "/api/health"
+healthcheckTimeout = 100
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3
+
+[variables]
+# Chains & RPCs (free public endpoints)
+CHAINS = "ethereum,arbitrum,base"
+RPC_ETHEREUM = "https://eth.llamarpc.com"
+RPC_ARBITRUM = "https://arb1.arbitrum.io/rpc"
+RPC_BASE = "https://mainnet.base.org"
+
+# Pairs to monitor
+PAIRS = "ETH/USDC,WBTC/USDC"
+
+# Monitoring
+POLL_INTERVAL_MS = "15000"
+PRICE_HISTORY_DAYS = "30"
+
+# Detection thresholds
+MIN_GROSS_SPREAD_PCT = "0.05"
+MIN_NET_SPREAD_PCT = "0.02"
+
+# Simulation
+SIM_TRADE_SIZES = "5000,10000,20000,50000"
+SIM_SLIPPAGE_TOLERANCE_PCT = "0.5"
+
+# Auth bypass OFF in production
+AUTH_BYPASS = "false"
+
+# Note: Set these secrets in Railway Dashboard, not here:
+# - GOOGLE_CLIENT_ID
+# - GOOGLE_CLIENT_SECRET
+# - GOOGLE_CALLBACK_URL (https://your-domain.railway.app/auth/google/callback)
+# - SESSION_SECRET
+# - ALLOWED_EMAILS
