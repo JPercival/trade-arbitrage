@@ -1,10 +1,11 @@
 ---
 id: ARB-6
 title: Price monitor service
-status: To Do
-assignee: []
+status: Done
+assignee:
+  - '@ros'
 created_date: '2026-02-02 17:21'
-updated_date: '2026-02-02 18:12'
+updated_date: '2026-02-02 19:51'
 labels:
   - engine
 dependencies:
@@ -34,11 +35,11 @@ Should be resilient: catch errors per-cycle, log failures, keep running. Emit ev
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Polls DeFi Llama at configured interval
-- [ ] #2 Stores all price snapshots in DB each cycle
-- [ ] #3 Compares prices cross-chain and identifies gross spreads
-- [ ] #4 Triggers ParaSwap quotes only when gross spread exceeds threshold
-- [ ] #5 Resilient to individual cycle failures (logs error, continues)
-- [ ] #6 Logs cycle stats (prices fetched, spreads detected, errors)
-- [ ] #7 100% test coverage for all new code (unit tests with vitest or similar)
+- [x] #1 Polls DeFi Llama at configured interval
+- [x] #2 Stores all price snapshots in DB each cycle
+- [x] #3 Compares prices cross-chain and identifies gross spreads
+- [x] #4 Triggers ParaSwap quotes only when gross spread exceeds threshold
+- [x] #5 Resilient to individual cycle failures (logs error, continues)
+- [x] #6 Logs cycle stats (prices fetched, spreads detected, errors)
+- [x] #7 100% test coverage for all new code (unit tests with vitest or similar)
 <!-- AC:END -->

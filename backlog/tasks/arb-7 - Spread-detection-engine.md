@@ -1,10 +1,11 @@
 ---
 id: ARB-7
 title: Spread detection engine
-status: To Do
-assignee: []
+status: Done
+assignee:
+  - '@ros'
 created_date: '2026-02-02 17:21'
-updated_date: '2026-02-02 18:12'
+updated_date: '2026-02-02 19:51'
 labels:
   - engine
 dependencies:
@@ -36,11 +37,11 @@ Weight L2↔L2 spreads (flag Ethereum legs as high-friction).
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Compares all chain combinations for each token
-- [ ] #2 Calculates gross and net spread percentages correctly
-- [ ] #3 Creates spread record in DB when net spread exceeds MIN_NET_SPREAD_PCT
-- [ ] #4 Tracks spread lifecycle (open → update → close with duration)
-- [ ] #5 Flags Ethereum-leg spreads as high-friction in the spread record
-- [ ] #6 Updates daily_stats aggregates on each new spread
-- [ ] #7 100% test coverage for all new code (unit tests with vitest or similar)
+- [x] #1 Compares all chain combinations for each token
+- [x] #2 Calculates gross and net spread percentages correctly
+- [x] #3 Creates spread record in DB when net spread exceeds MIN_NET_SPREAD_PCT
+- [x] #4 Tracks spread lifecycle (open → update → close with duration)
+- [x] #5 Flags Ethereum-leg spreads as high-friction in the spread record
+- [x] #6 Updates daily_stats aggregates on each new spread
+- [x] #7 100% test coverage for all new code (unit tests with vitest or similar)
 <!-- AC:END -->

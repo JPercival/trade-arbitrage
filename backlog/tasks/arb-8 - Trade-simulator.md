@@ -1,10 +1,11 @@
 ---
 id: ARB-8
 title: Trade simulator
-status: To Do
-assignee: []
+status: Done
+assignee:
+  - '@ros'
 created_date: '2026-02-02 17:21'
-updated_date: '2026-02-02 18:12'
+updated_date: '2026-02-02 19:51'
 labels:
   - engine
 dependencies:
@@ -28,10 +29,10 @@ This shows how slippage scales with size — critical for deciding real trade si
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Simulates trades at all configured SIM_TRADE_SIZES
-- [ ] #2 Gets real ParaSwap quotes for both legs at each size
-- [ ] #3 Calculates net profit including gas costs on both chains
-- [ ] #4 Stores sim_trade records in DB with full breakdown
-- [ ] #5 Handles quote failures gracefully (log error, skip that size)
-- [ ] #6 100% test coverage for all new code (unit tests with vitest or similar)
+- [x] #1 Simulates trades at all configured SIM_TRADE_SIZES
+- [x] #2 Gets real ParaSwap quotes for both legs at each size
+- [x] #3 Calculates net profit including gas costs on both chains
+- [x] #4 Stores sim_trade records in DB with full breakdown
+- [x] #5 Handles quote failures gracefully (log error, skip that size)
+- [x] #6 100% test coverage for all new code (unit tests with vitest or similar)
 <!-- AC:END -->
