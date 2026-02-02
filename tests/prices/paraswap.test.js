@@ -319,6 +319,44 @@ describe('fetchQuote', () => {
     }
   });
 
+  it('throws INVALID_CHAIN when chain has ID but no token addresses', async () => {
+    // Chain has a chainId but no TOKEN_ADDRESSES entry
+    try {
+      await fetchQuote({
+        chain: 'polygon',
+        srcToken: 'USDC',
+        destToken: 'ETH',
+        amount: 10000,
+        fetchFn: mockFetch,
+        _chainIds: { polygon: 137 },
+        _tokenAddresses: {}, // no polygon entry
+      });
+      expect.fail('should have thrown');
+    } catch (err) {
+      expect(err).toBeInstanceOf(ParaSwapError);
+      expect(err.code).toBe('INVALID_CHAIN');
+      expect(err.message).toContain('No token addresses');
+    }
+  });
+
+  it('throws INVALID_TOKEN when token has address but no known decimals', async () => {
+    try {
+      await fetchQuote({
+        chain: 'ethereum',
+        srcToken: 'USDC',
+        destToken: 'ETH',
+        amount: 10000,
+        fetchFn: mockFetch,
+        _tokenDecimals: { USDC: 6 }, // Missing WETH decimals
+      });
+      expect.fail('should have thrown');
+    } catch (err) {
+      expect(err).toBeInstanceOf(ParaSwapError);
+      expect(err.code).toBe('INVALID_TOKEN');
+      expect(err.message).toContain('Unknown decimals');
+    }
+  });
+
   it('throws INVALID_TOKEN for null address (WBTC on base)', async () => {
     try {
       await fetchQuote({

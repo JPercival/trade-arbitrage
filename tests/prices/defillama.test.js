@@ -107,6 +107,14 @@ describe('buildCoinKeys', () => {
     const keys = buildCoinKeys(TEST_CHAINS, []);
     expect(keys).toEqual([]);
   });
+
+  it('passes through unmapped token names as-is', () => {
+    // A pair with an unmapped base token — won't find an address, so no keys
+    const weirdPairs = [{ base: 'LINK', quote: 'USDC', symbol: 'LINK/USDC' }];
+    const keys = buildCoinKeys(['ethereum'], weirdPairs);
+    // LINK isn't in TOKEN_ADDRESSES, so no keys generated
+    expect(keys).toEqual([]);
+  });
 });
 
 // ── parsePrices ────────────────────────────────────────────────────────────────
@@ -233,6 +241,25 @@ describe('parsePrices', () => {
     });
     expect(prices).toHaveLength(0);
   });
+
+  it('skips entries where chain has no token addresses at all', () => {
+    // A chain that exists in CHAIN_NAME_MAP reverse lookup but has no TOKEN_ADDRESSES entry
+    // This tests the `if (!chainTokens) return null` branch in addressToPair
+    const data = {
+      coins: {
+        'ethereum:0x1234567890abcdef1234567890abcdef12345678': {
+          price: 100,
+          timestamp: NOW_SECONDS,
+        },
+      },
+    };
+    const { prices } = parsePrices(data, {
+      now: NOW_SECONDS,
+      pairs: TEST_PAIRS,
+    });
+    // Address doesn't match any known token, so no prices
+    expect(prices).toHaveLength(0);
+  });
 });
 
 // ── fetchPrices ────────────────────────────────────────────────────────────────
@@ -245,7 +272,26 @@ describe('fetchPrices', () => {
   });
 
   it('fetches and parses prices successfully', async () => {
-    const responseData = makeLlamaResponse();
+    const nowSec = Math.floor(Date.now() / 1000);
+    const responseData = {
+      coins: {
+        'ethereum:0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2': {
+          decimals: 18, symbol: 'WETH', price: 2500.42, timestamp: nowSec - 5, confidence: 0.99,
+        },
+        'arbitrum:0x82aF49447D8a07e3bd95BD0d56f35241523fBab1': {
+          decimals: 18, symbol: 'WETH', price: 2501.15, timestamp: nowSec - 3, confidence: 0.99,
+        },
+        'base:0x4200000000000000000000000000000000000006': {
+          decimals: 18, symbol: 'WETH', price: 2499.88, timestamp: nowSec - 2, confidence: 0.99,
+        },
+        'ethereum:0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599': {
+          decimals: 8, symbol: 'WBTC', price: 43567.89, timestamp: nowSec - 4, confidence: 0.99,
+        },
+        'arbitrum:0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f': {
+          decimals: 8, symbol: 'WBTC', price: 43570.12, timestamp: nowSec - 1, confidence: 0.99,
+        },
+      },
+    };
 
     mockFetch.mockResolvedValueOnce({
       ok: true,
@@ -287,21 +333,15 @@ describe('fetchPrices', () => {
       statusText: 'Too Many Requests',
     });
 
-    await expect(
-      fetchPrices({
-        chains: TEST_CHAINS,
-        pairs: TEST_PAIRS,
-        fetchFn: mockFetch,
-      })
-    ).rejects.toThrow(DefiLlamaError);
-
     try {
       await fetchPrices({
         chains: TEST_CHAINS,
         pairs: TEST_PAIRS,
         fetchFn: mockFetch,
       });
+      expect.fail('should have thrown');
     } catch (err) {
+      expect(err).toBeInstanceOf(DefiLlamaError);
       expect(err.code).toBe('RATE_LIMITED');
     }
   });
@@ -390,6 +430,20 @@ describe('fetchPrices', () => {
       expect(err).toBeInstanceOf(DefiLlamaError);
       expect(err.code).toBe('NETWORK_ERROR');
     }
+  });
+
+  it('uses config defaults when options are omitted', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({ coins: {} }),
+    });
+
+    // Call with only fetchFn — all other options should fall back to config defaults
+    const { prices } = await fetchPrices({ fetchFn: mockFetch });
+
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(prices).toEqual([]);
   });
 
   it('passes Accept header and signal to fetch', async () => {

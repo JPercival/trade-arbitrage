@@ -124,14 +124,17 @@ export async function fetchQuote(params) {
     amount,
     timeoutMs = FETCH_TIMEOUT_MS,
     fetchFn = globalThis.fetch,
+    _tokenAddresses = TOKEN_ADDRESSES,
+    _chainIds = CHAIN_IDS,
+    _tokenDecimals = TOKEN_DECIMALS,
   } = params;
 
-  const chainId = CHAIN_IDS[chain];
+  const chainId = _chainIds[chain];
   if (!chainId) {
     throw new ParaSwapError(`Unknown chain: ${chain}`, 'INVALID_CHAIN');
   }
 
-  const chainTokens = TOKEN_ADDRESSES[chain];
+  const chainTokens = _tokenAddresses[chain];
   if (!chainTokens) {
     throw new ParaSwapError(`No token addresses for chain: ${chain}`, 'INVALID_CHAIN');
   }
@@ -155,8 +158,8 @@ export async function fetchQuote(params) {
     );
   }
 
-  const srcDecimals = TOKEN_DECIMALS[srcRegistryName];
-  const destDecimals = TOKEN_DECIMALS[destRegistryName];
+  const srcDecimals = _tokenDecimals[srcRegistryName];
+  const destDecimals = _tokenDecimals[destRegistryName];
 
   if (srcDecimals === undefined || destDecimals === undefined) {
     throw new ParaSwapError(

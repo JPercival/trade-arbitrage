@@ -1,11 +1,11 @@
 ---
 id: ARB-4
 title: ParaSwap quote fetcher
-status: In Progress
+status: Done
 assignee:
   - '@ros'
 created_date: '2026-02-02 17:20'
-updated_date: '2026-02-02 19:01'
+updated_date: '2026-02-02 19:44'
 labels:
   - prices
   - api
@@ -31,10 +31,10 @@ Network IDs: Ethereum=1, Arbitrum=42161, Base=8453
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Fetches swap quote for a given token pair, amount, and chain
-- [ ] #2 Parses response into execution price, gas cost, and route info
-- [ ] #3 Handles both legs: USDC→token (buy) and token→USDC (sell)
-- [ ] #4 Handles errors, timeouts, and rate limiting gracefully
-- [ ] #5 Calculates effective price per token after all routing
-- [ ] #6 100% test coverage for all new code (unit tests with vitest or similar)
+- [x] #1 Fetches swap quote for a given token pair, amount, and chain
+- [x] #2 Parses response into execution price, gas cost, and route info
+- [x] #3 Handles both legs: USDC→token (buy) and token→USDC (sell)
+- [x] #4 Handles errors, timeouts, and rate limiting gracefully
+- [x] #5 Calculates effective price per token after all routing
+- [x] #6 100% test coverage for all new code (unit tests with vitest or similar)
 <!-- AC:END -->
