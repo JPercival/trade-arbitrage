@@ -1,9 +1,11 @@
 ---
 id: ARB-3
 title: DeFi Llama price fetcher
-status: To Do
-assignee: []
+status: In Progress
+assignee:
+  - '@ros'
 created_date: '2026-02-02 17:20'
+updated_date: '2026-02-02 19:01'
 labels:
   - prices
   - api
@@ -33,4 +35,5 @@ Should handle: rate limits, timeouts, stale data detection (reject quotes older 
 - [ ] #3 Handles errors gracefully (timeout, 429, malformed response)
 - [ ] #4 Rejects stale prices (timestamp older than configurable threshold)
 - [ ] #5 Stores prices in the prices table via db layer
+- [ ] #6 100% test coverage for all new code (unit tests with vitest or similar)
 <!-- AC:END -->

@@ -1,9 +1,11 @@
 ---
 id: ARB-4
 title: ParaSwap quote fetcher
-status: To Do
-assignee: []
+status: In Progress
+assignee:
+  - '@ros'
 created_date: '2026-02-02 17:20'
+updated_date: '2026-02-02 19:01'
 labels:
   - prices
   - api
@@ -34,4 +36,5 @@ Network IDs: Ethereum=1, Arbitrum=42161, Base=8453
 - [ ] #3 Handles both legs: USDC→token (buy) and token→USDC (sell)
 - [ ] #4 Handles errors, timeouts, and rate limiting gracefully
 - [ ] #5 Calculates effective price per token after all routing
+- [ ] #6 100% test coverage for all new code (unit tests with vitest or similar)
 <!-- AC:END -->

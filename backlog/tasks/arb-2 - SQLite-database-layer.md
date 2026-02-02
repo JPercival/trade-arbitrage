@@ -1,9 +1,11 @@
 ---
 id: ARB-2
 title: SQLite database layer
-status: To Do
-assignee: []
+status: Done
+assignee:
+  - '@ros'
 created_date: '2026-02-02 17:20'
+updated_date: '2026-02-02 19:03'
 labels:
   - database
 dependencies:
@@ -27,10 +29,11 @@ Include:
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 All four tables created with correct schema
-- [ ] #2 Indexes on key query patterns
-- [ ] #3 Insert helpers for prices, spreads, sim_trades
-- [ ] #4 Query helpers for latest prices, open spreads, trade history
-- [ ] #5 Retention pruning deletes prices older than PRICE_HISTORY_DAYS
-- [ ] #6 DB file created in data/ directory (gitignored)
+- [x] #1 All four tables created with correct schema
+- [x] #2 Indexes on key query patterns
+- [x] #3 Insert helpers for prices, spreads, sim_trades
+- [x] #4 Query helpers for latest prices, open spreads, trade history
+- [x] #5 Retention pruning deletes prices older than PRICE_HISTORY_DAYS
+- [x] #6 DB file created in data/ directory (gitignored)
+- [x] #7 100% test coverage for all new code (unit tests with vitest or similar)
 <!-- AC:END -->

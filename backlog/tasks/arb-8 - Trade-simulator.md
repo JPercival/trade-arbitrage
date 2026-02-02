@@ -4,6 +4,7 @@ title: Trade simulator
 status: To Do
 assignee: []
 created_date: '2026-02-02 17:21'
+updated_date: '2026-02-02 18:12'
 labels:
   - engine
 dependencies:
@@ -32,4 +33,5 @@ This shows how slippage scales with size — critical for deciding real trade si
 - [ ] #3 Calculates net profit including gas costs on both chains
 - [ ] #4 Stores sim_trade records in DB with full breakdown
 - [ ] #5 Handles quote failures gracefully (log error, skip that size)
+- [ ] #6 100% test coverage for all new code (unit tests with vitest or similar)
 <!-- AC:END -->

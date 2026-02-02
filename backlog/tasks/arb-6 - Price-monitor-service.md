@@ -4,6 +4,7 @@ title: Price monitor service
 status: To Do
 assignee: []
 created_date: '2026-02-02 17:21'
+updated_date: '2026-02-02 18:12'
 labels:
   - engine
 dependencies:
@@ -39,4 +40,5 @@ Should be resilient: catch errors per-cycle, log failures, keep running. Emit ev
 - [ ] #4 Triggers ParaSwap quotes only when gross spread exceeds threshold
 - [ ] #5 Resilient to individual cycle failures (logs error, continues)
 - [ ] #6 Logs cycle stats (prices fetched, spreads detected, errors)
+- [ ] #7 100% test coverage for all new code (unit tests with vitest or similar)
 <!-- AC:END -->

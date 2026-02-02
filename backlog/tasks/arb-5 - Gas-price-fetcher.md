@@ -1,9 +1,11 @@
 ---
 id: ARB-5
 title: Gas price fetcher
-status: To Do
-assignee: []
+status: Done
+assignee:
+  - '@ros'
 created_date: '2026-02-02 17:21'
+updated_date: '2026-02-02 19:04'
 labels:
   - prices
   - rpc
@@ -25,8 +27,9 @@ For L2s (Arbitrum, Base), also need to account for L1 data posting costs in gas 
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Fetches current gas price from all configured chains
-- [ ] #2 Returns gas price in both gwei and USD (using ETH price from DeFi Llama)
-- [ ] #3 Estimates swap cost in USD per chain (gas price × ~200K gas units)
-- [ ] #4 Handles RPC errors and timeouts
+- [x] #1 Fetches current gas price from all configured chains
+- [x] #2 Returns gas price in both gwei and USD (using ETH price from DeFi Llama)
+- [x] #3 Estimates swap cost in USD per chain (gas price × ~200K gas units)
+- [x] #4 Handles RPC errors and timeouts
+- [x] #5 100% test coverage for all new code (unit tests with vitest or similar)
 <!-- AC:END -->

@@ -4,6 +4,7 @@ title: Spread detection engine
 status: To Do
 assignee: []
 created_date: '2026-02-02 17:21'
+updated_date: '2026-02-02 18:12'
 labels:
   - engine
 dependencies:
@@ -41,4 +42,5 @@ Weight L2↔L2 spreads (flag Ethereum legs as high-friction).
 - [ ] #4 Tracks spread lifecycle (open → update → close with duration)
 - [ ] #5 Flags Ethereum-leg spreads as high-friction in the spread record
 - [ ] #6 Updates daily_stats aggregates on each new spread
+- [ ] #7 100% test coverage for all new code (unit tests with vitest or similar)
 <!-- AC:END -->
