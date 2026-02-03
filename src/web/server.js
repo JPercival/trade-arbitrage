@@ -19,6 +19,9 @@ const START_TIME = Date.now();
 function createApp(db) {
   const app = express();
 
+  // ── Trust Railway's reverse proxy (needed for secure cookies, correct req.ip) ──
+  app.set('trust proxy', 1);
+
   // ── EJS setup ──────────────────────────────────────────────────────────────
   app.set('view engine', 'ejs');
   app.set('views', resolve(__dirname, 'views'));
