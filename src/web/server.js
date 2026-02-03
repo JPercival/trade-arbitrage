@@ -73,8 +73,9 @@ function createApp(db) {
 
 function startServer(db, port = 3000) {
   const app = createApp(db);
-  const server = app.listen(port, () => {
-    console.log(`Dashboard running at http://localhost:${port}`);
+  const host = process.env.HOST || '0.0.0.0';
+  const server = app.listen(port, host, () => {
+    console.log(`Dashboard running at http://${host}:${port}`);
   });
   return server;
 }

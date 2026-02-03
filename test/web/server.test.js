@@ -188,11 +188,12 @@ describe('server integration', () => {
   describe('startServer', () => {
     it('starts listening on a port', async () => {
       const server = startServer(db, 0);
+      await new Promise((resolve) => server.on('listening', resolve));
       const addr = server.address();
       expect(addr.port).toBeGreaterThan(0);
 
       // Verify it responds
-      const res = await fetch(`http://localhost:${addr.port}/api/health`);
+      const res = await fetch(`http://127.0.0.1:${addr.port}/api/health`);
       expect(res.status).toBe(200);
 
       server.close();
